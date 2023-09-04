@@ -12,7 +12,7 @@
 static size_t svb_data_bytes_scalar(const uint32_t* in, uint32_t length);
 
 STREAMVBYTE_TARGET_SSE41
-static inline size_t svb_control_SSE41 (__m128i lo, __m128i hi) {
+static FORCE_INLINE size_t svb_control_SSE41 (__m128i lo, __m128i hi) {
     const __m128i mask_01 = _mm_set1_epi8(0x01);
     const __m128i mask_7F00 = _mm_set1_epi16(0x7F00);
 

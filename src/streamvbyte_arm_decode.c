@@ -8,7 +8,7 @@ typedef uint8x16_t decode_t;
 #else
 typedef uint8x8x2_t decode_t;
 #endif
-static inline decode_t  _decode_neon(const uint8_t key,
+static FORCE_INLINE decode_t  _decode_neon(const uint8_t key,
 					const uint8_t * restrict *dataPtrPtr) {
 
   uint8_t len;

@@ -69,11 +69,11 @@ static uint8_t *svb_encode_scalar_d1_init(const uint32_t *in,
 // from streamvbyte.c
 size_t streamvbyte_encode_quad(__m128i in, uint8_t *outData, uint8_t *outCode);
 
-static __m128i Delta(__m128i curr, __m128i prev) {
+static FORCE_INLINE __m128i Delta(__m128i curr, __m128i prev) {
   return _mm_sub_epi32(curr, _mm_alignr_epi8(curr, prev, 12));
 }
 
-static uint8_t *svb_encode_vector_d1_init(const uint32_t *in,
+static FORCE_INLINE uint8_t *svb_encode_vector_d1_init(const uint32_t *in,
                                           uint8_t *__restrict__ keyPtr,
                                           uint8_t *__restrict__ dataPtr,
                                           uint32_t count, uint32_t prev) {
@@ -114,7 +114,7 @@ size_t streamvbyte_delta_encode(const uint32_t *in, uint32_t count, uint8_t *out
 }
 
 #ifdef STREAMVBYTE_X64
-static inline __m128i svb_decode_sse41(uint32_t key,
+static FORCE_INLINE __m128i svb_decode_sse41(uint32_t key,
                                   const uint8_t *__restrict__ *dataPtrPtr) {
   uint8_t len = lengthTable[key];
   __m128i Data = _mm_loadu_si128((const __m128i *)*dataPtrPtr);
@@ -127,11 +127,11 @@ static inline __m128i svb_decode_sse41(uint32_t key,
 }
 #define BroadcastLastXMM 0xFF // bits 0-7 all set to choose highest element
 
-static inline void svb_write_sse41(uint32_t *out, __m128i Vec) {
+static FORCE_INLINE void svb_write_sse41(uint32_t *out, __m128i Vec) {
   _mm_storeu_si128((__m128i *)out, Vec);
 }
 
-static __m128i svb_write_sse41_d1(uint32_t *out, __m128i Vec, __m128i Prev) {
+static FORCE_INLINE __m128i svb_write_sse41_d1(uint32_t *out, __m128i Vec, __m128i Prev) {
   __m128i Add = _mm_slli_si128(Vec, 4); // Cycle 1: [- A B C] (already done)
   Prev = _mm_shuffle_epi32(Prev, BroadcastLastXMM); // Cycle 2: [P P P P]
   Vec = _mm_add_epi32(Vec, Add);                    // Cycle 2: [A AB BC CD]
@@ -150,7 +150,7 @@ static __m128i High16To32 = {8,  9,  -1, -1, 10, 11, -1, -1,
                              12, 13, -1, -1, 14, 15, -1, -1};
 #endif
 
-static inline __m128i svb_write_16bit_sse41_d1(uint32_t *out, __m128i Vec,
+static FORCE_INLINE __m128i svb_write_16bit_sse41_d1(uint32_t *out, __m128i Vec,
                                           __m128i Prev) {
   // vec == [A B C D E F G H] (16 bit values)
   __m128i Add = _mm_slli_si128(Vec, 2);             // [- A B C D E F G]
@@ -169,7 +169,7 @@ static inline __m128i svb_write_16bit_sse41_d1(uint32_t *out, __m128i Vec,
 }
 #endif
 
-static inline uint32_t svb_decode_data(const uint8_t **dataPtrPtr, uint8_t code) {
+static FORCE_INLINE uint32_t svb_decode_data(const uint8_t **dataPtrPtr, uint8_t code) {
   const uint8_t *dataPtr = *dataPtrPtr;
   uint32_t val;
 
@@ -193,7 +193,7 @@ static inline uint32_t svb_decode_data(const uint8_t **dataPtrPtr, uint8_t code)
   return val;
 }
 
-static const uint8_t *svb_decode_scalar_d1_init(uint32_t *outPtr,
+static FORCE_INLINE const uint8_t *svb_decode_scalar_d1_init(uint32_t *outPtr,
                                          const uint8_t *keyPtr,
                                          const uint8_t *dataPtr, uint32_t count,
                                          uint32_t prev) {
@@ -219,7 +219,7 @@ static const uint8_t *svb_decode_scalar_d1_init(uint32_t *outPtr,
 }
 
 #ifdef STREAMVBYTE_X64
-static const uint8_t *svb_decode_sse41_d1_init(uint32_t *out,
+static FORCE_INLINE const uint8_t *svb_decode_sse41_d1_init(uint32_t *out,
                                       const uint8_t *__restrict__ keyPtr,
                                       const uint8_t *__restrict__ dataPtr,
                                       uint64_t count, uint32_t prev) {

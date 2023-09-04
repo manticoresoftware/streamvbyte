@@ -6,7 +6,7 @@ static const uint8_t pgatherlo[] = {12, 8, 4, 0, 12, 8, 4, 0}; // apparently onl
 #define sum (1 | 1 << 8 | 1 << 16 | 1 << 24)
 static const  uint32_t pAggregators[2] = {concat, sum}; // apparently only used in streamvbyte_encode4
 
-static inline size_t streamvbyte_encode4(uint32x4_t data, uint8_t *__restrict__ outData, uint8_t *__restrict__ outCode) {
+static FORCE_INLINE size_t streamvbyte_encode4(uint32x4_t data, uint8_t *__restrict__ outData, uint8_t *__restrict__ outCode) {
 
   const uint8x8_t gatherlo = vld1_u8(pgatherlo);
   const uint32x2_t Aggregators = vld1_u32(pAggregators);
@@ -49,7 +49,7 @@ static inline size_t streamvbyte_encode4(uint32x4_t data, uint8_t *__restrict__ 
   return length;
 }
 
-static inline size_t streamvbyte_encode_quad(const uint32_t *__restrict__ in, uint8_t *__restrict__ outData, uint8_t *__restrict__ outCode) {
+static FORCE_INLINE size_t streamvbyte_encode_quad(const uint32_t *__restrict__ in, uint8_t *__restrict__ outData, uint8_t *__restrict__ outCode) {
   uint32x4_t inq = vld1q_u32(in);
 
   return streamvbyte_encode4(inq, outData, outCode);

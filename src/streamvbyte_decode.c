@@ -15,7 +15,7 @@
 #include "streamvbyte_x64_decode.c"
 #endif // STREAMVBYTE_X64
 
-static inline uint32_t svb_decode_data(const uint8_t **dataPtrPtr, uint8_t code) {
+static FORCE_INLINE uint32_t svb_decode_data(const uint8_t **dataPtrPtr, uint8_t code) {
   const uint8_t *dataPtr = *dataPtrPtr;
   uint32_t val;
 

@@ -71,6 +71,25 @@ POSSIBILITY OF SUCH DAMAGE.
 #include <cpuid.h>
 #endif // defined(_MSC_VER)
 
+#ifndef FORCE_INLINE
+	#ifndef NDEBUG
+		#define FORCE_INLINE inline
+	#else
+		#ifdef _MSC_VER
+			#define FORCE_INLINE __forceinline
+		#else
+			#if defined (__cplusplus) || defined (__STDC_VERSION__) && __STDC_VERSION__ >= 199901L   /* C99 */
+				#ifdef __GNUC__
+					#define FORCE_INLINE inline __attribute__((always_inline))
+				#else
+					#define FORCE_INLINE inline
+				#endif
+			#else
+				#define FORCE_INLINE
+			#endif
+		#endif
+	#endif
+#endif
 
 enum streamvbyte_instruction_set {
   streamvbyte_DEFAULT = 0x0,
@@ -88,7 +107,7 @@ enum streamvbyte_instruction_set {
 
 #if defined(__PPC64__)
 
-static inline uint32_t dynamic_streamvbyte_detect_supported_architectures(void) {
+static FORCE_INLINE uint32_t dynamic_streamvbyte_detect_supported_architectures(void) {
   return streamvbyte_ALTIVEC;
 }
 
@@ -96,13 +115,13 @@ static inline uint32_t dynamic_streamvbyte_detect_supported_architectures(void) 
 
 #if defined(__ARM_NEON)
 
-static inline uint32_t dynamic_streamvbyte_detect_supported_architectures(void) {
+static FORCE_INLINE uint32_t dynamic_streamvbyte_detect_supported_architectures(void) {
   return streamvbyte_NEON;
 }
 
 #else // ARM without NEON
 
-static inline uint32_t dynamic_streamvbyte_detect_supported_architectures(void) {
+static FORCE_INLINE uint32_t dynamic_streamvbyte_detect_supported_architectures(void) {
   return streamvbyte_DEFAULT;
 }
 
@@ -113,7 +132,7 @@ static inline uint32_t dynamic_streamvbyte_detect_supported_architectures(void) 
 
 
 
-static inline void cpuid(uint32_t *eax, uint32_t *ebx, uint32_t *ecx,
+static FORCE_INLINE void cpuid(uint32_t *eax, uint32_t *ebx, uint32_t *ecx,
                          uint32_t *edx) {
 
 #if defined(_MSC_VER)
@@ -136,7 +155,7 @@ static inline void cpuid(uint32_t *eax, uint32_t *ebx, uint32_t *ecx,
 #endif
 }
 
-static inline uint32_t dynamic_streamvbyte_detect_supported_architectures(void) {
+static FORCE_INLINE uint32_t dynamic_streamvbyte_detect_supported_architectures(void) {
   uint32_t eax, ebx, ecx, edx;
   uint32_t host_isa = 0x0;
   // Can be found on Intel ISA Reference for CPUID
@@ -183,7 +202,7 @@ static inline uint32_t dynamic_streamvbyte_detect_supported_architectures(void) 
 #else // fallback
 
 
-static inline uint32_t dynamic_streamvbyte_detect_supported_architectures(void) {
+static FORCE_INLINE uint32_t dynamic_streamvbyte_detect_supported_architectures(void) {
   return streamvbyte_DEFAULT;
 }
 
@@ -195,7 +214,7 @@ static inline uint32_t dynamic_streamvbyte_detect_supported_architectures(void) 
 #define STREAMVBYTE_X64
 #if defined(__cplusplus)
 #include <atomic>
-static inline uint32_t streamvbyte_detect_supported_architectures(void) {
+static FORCE_INLINE uint32_t streamvbyte_detect_supported_architectures(void) {
     static std::atomic<int> buffer{streamvbyte_UNINITIALIZED};
     if(buffer == streamvbyte_UNINITIALIZED) {
       buffer = dynamic_streamvbyte_detect_supported_architectures();
@@ -204,7 +223,7 @@ static inline uint32_t streamvbyte_detect_supported_architectures(void) {
 }
 #elif defined(_MSC_VER) && !defined(__clang__)
 // Visual Studio does not support C11 atomics.
-static inline uint32_t streamvbyte_detect_supported_architectures(void) {
+static FORCE_INLINE uint32_t streamvbyte_detect_supported_architectures(void) {
     static int buffer = streamvbyte_UNINITIALIZED;
     if(buffer == streamvbyte_UNINITIALIZED) {
       buffer = dynamic_streamvbyte_detect_supported_architectures();
@@ -216,7 +235,7 @@ static inline uint32_t streamvbyte_detect_supported_architectures(void) {
 #include <stdatomic.h>
 #endif
 
-static inline uint32_t streamvbyte_detect_supported_architectures(void) {
+static FORCE_INLINE uint32_t streamvbyte_detect_supported_architectures(void) {
 #if __STDC_VERSION__ >= 201112L && !defined(__STDC_NO_ATOMICS__)
     static _Atomic uint32_t buffer = streamvbyte_UNINITIALIZED;
 #else
@@ -241,11 +260,11 @@ static inline uint32_t streamvbyte_detect_supported_architectures(void) {
 
 
 #if defined(__sse41__)
-static inline bool streamvbyte_sse41(void) {
+static FORCE_INLINE bool streamvbyte_sse41(void) {
   return true;
 }
 #else
-static inline bool streamvbyte_sse41(void) {
+static FORCE_INLINE bool streamvbyte_sse41(void) {
   return  (streamvbyte_detect_supported_architectures() & streamvbyte_SSE41) == streamvbyte_SSE41;
 }
 #endif
@@ -253,11 +272,11 @@ static inline bool streamvbyte_sse41(void) {
 
 #else // defined(__x86_64__) || defined(_M_AMD64) // x64
 
-static inline bool streamvbyte_sse41(void) {
+static FORCE_INLINE bool streamvbyte_sse41(void) {
   return false;
 }
 
-static inline uint32_t streamvbyte_detect_supported_architectures(void) {
+static FORCE_INLINE uint32_t streamvbyte_detect_supported_architectures(void) {
     // no runtime dispatch
     return dynamic_streamvbyte_detect_supported_architectures();
 }

@@ -9,7 +9,7 @@
 #endif
 
 STREAMVBYTE_TARGET_SSE41
-static inline __m128i svb_decode_sse41(uint32_t key,
+static FORCE_INLINE __m128i svb_decode_sse41(uint32_t key,
                                   const uint8_t *__restrict__ *dataPtrPtr) {
   uint8_t len = lengthTable[key];
   __m128i Data = _mm_loadu_si128((const __m128i *)*dataPtrPtr);
@@ -23,7 +23,7 @@ static inline __m128i svb_decode_sse41(uint32_t key,
 STREAMVBYTE_UNTARGET_REGION
 #define BroadcastLastXMM 0xFF // bits 0-7 all set to choose highest element
 STREAMVBYTE_TARGET_SSE41
-static inline void svb_write_sse41(uint32_t *out, __m128i Vec) {
+static FORCE_INLINE void svb_write_sse41(uint32_t *out, __m128i Vec) {
   _mm_storeu_si128((__m128i *)out, Vec);
 }
 STREAMVBYTE_UNTARGET_REGION
@@ -44,7 +44,7 @@ STREAMVBYTE_UNTARGET_REGION
 
 
 STREAMVBYTE_TARGET_SSE41
-static inline __m128i svb_write_16bit_sse41_d1(uint32_t *out, __m128i Vec,
+static FORCE_INLINE __m128i svb_write_16bit_sse41_d1(uint32_t *out, __m128i Vec,
                                           __m128i Prev) {
   __m128i High16To32 = _mm_set_epi64x(0xFFFF0F0EFFFF0D0CLL,
                                       0xFFFF0B0AFFFF0908LL);
@@ -66,7 +66,7 @@ static inline __m128i svb_write_16bit_sse41_d1(uint32_t *out, __m128i Vec,
 STREAMVBYTE_UNTARGET_REGION
 
 STREAMVBYTE_TARGET_SSE41
-static const uint8_t *svb_decode_sse41_d1_init(uint32_t *out,
+static FORCE_INLINE const uint8_t *svb_decode_sse41_d1_init(uint32_t *out,
                                       const uint8_t *__restrict__ keyPtr,
                                       const uint8_t *__restrict__ dataPtr,
                                       uint64_t count, uint32_t prev) {

@@ -14,7 +14,7 @@
 
 #ifdef STREAMVBYTE_X64
 STREAMVBYTE_TARGET_SSE41
-static inline __m128i svb_decode_sse41(uint32_t key,
+static FORCE_INLINE __m128i svb_decode_sse41(uint32_t key,
                                   const uint8_t *__restrict__ *dataPtrPtr) {
   uint8_t len;
   __m128i Data = _mm_loadu_si128((const __m128i *)*dataPtrPtr);
@@ -28,14 +28,14 @@ static inline __m128i svb_decode_sse41(uint32_t key,
 STREAMVBYTE_UNTARGET_REGION
 
 STREAMVBYTE_TARGET_SSE41
-static inline void svb_write_sse41(uint32_t *out, __m128i Vec) {
+static FORCE_INLINE void svb_write_sse41(uint32_t *out, __m128i Vec) {
   _mm_storeu_si128((__m128i *)out, Vec);
 }
 STREAMVBYTE_UNTARGET_REGION
 
 #endif // STREAMVBYTE_X64
 
-static inline uint32_t svb_decode_data(const uint8_t **dataPtrPtr, uint8_t code) {
+static FORCE_INLINE uint32_t svb_decode_data(const uint8_t **dataPtrPtr, uint8_t code) {
   const uint8_t *dataPtr = *dataPtrPtr;
   uint32_t val;
 

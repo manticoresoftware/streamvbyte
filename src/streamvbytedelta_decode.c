@@ -7,7 +7,7 @@
 #pragma clang diagnostic ignored "-Wdeclaration-after-statement"
 #endif
 
-static inline uint32_t svb_decode_data(const uint8_t **dataPtrPtr, uint8_t code) {
+static FORCE_INLINE uint32_t svb_decode_data(const uint8_t **dataPtrPtr, uint8_t code) {
   const uint8_t *dataPtr = *dataPtrPtr;
   uint32_t val;
 
@@ -31,7 +31,7 @@ static inline uint32_t svb_decode_data(const uint8_t **dataPtrPtr, uint8_t code)
   return val;
 }
 
-static const uint8_t *svb_decode_scalar_d1_init(uint32_t *outPtr,
+static FORCE_INLINE const uint8_t *svb_decode_scalar_d1_init(uint32_t *outPtr,
                                          const uint8_t *keyPtr,
                                          const uint8_t *dataPtr, uint32_t count,
                                          uint32_t prev) {
